@@ -13,7 +13,7 @@ import edu.monash.fit2099.engine.displays.Menu;
  * Created by:
  * @author Adrian Kristanto
  * Modified by:
- *
+ * @author Guntaj Singh
  */
 public class Player extends Actor implements Resettable {
 
@@ -41,6 +41,7 @@ public class Player extends Actor implements Resettable {
 		// return/print the console menu
 		return menu.showMenu(this, actions, display);
 	}
+
 
 	@Override
 	public void reset() {}
