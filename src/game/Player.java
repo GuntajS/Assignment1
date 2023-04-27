@@ -46,6 +46,10 @@ public class Player extends Actor implements Resettable {
 		if (lastAction.getNextAction() != null)
 			return lastAction.getNextAction();
 
+		// prints out how many runes the player has if they have runes
+		if (Utils.hasRunes(this) != null) {
+			System.out.println("Runes: " + Utils.hasRunes(this).getRuneNum());
+		}
 		// return/print the console menu
 		return menu.showMenu(this, actions, display);
 	}
@@ -61,15 +65,13 @@ public class Player extends Actor implements Resettable {
 		}
 
 		if (otherActor.hasCapability(Status.WILL_FOLLOW)) {
-			Enemy enemy = (Enemy) otherActor;
-			enemy.addFollowBehaviour(new FollowBehaviour(this));
+			((Enemy) otherActor).addFollowBehaviour(new FollowBehaviour(this));
 		}
 		// The player can be attacked by enemies
 		if (otherActor instanceof Enemy) {
 			Weapon weapon = ((Enemy) otherActor).getWeapon();
 			actions.add(new AttackAction(this, direction, weapon));
 		}
-
 		return actions;
 	}
 
