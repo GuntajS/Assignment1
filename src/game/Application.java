@@ -7,12 +7,14 @@ import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.positions.FancyGroundFactory;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.positions.World;
+import game.enemies.*;
 
 /**
  * The main class to start the game.
  * Created by:
+ * 
  * @author Adrian Kristanto
- * Modified by:
+ *         Modified by:
  *
  */
 public class Application {
@@ -61,11 +63,10 @@ public class Application {
 			}
 		}
 
-		gameMap.at(23, 17).addActor(new LoneWolf());
+		gameMap.at(41, 20).addActor(new HeavySS());
 
-		// HINT: what does it mean to prefer composition to inheritance?
 		Player player = new Player("Tarnished", '@', 300);
-		world.addPlayer(player, gameMap.at(36, 10));
+		world.addPlayer(player, gameMap.at(40, 14));
 
 		world.run();
 	}

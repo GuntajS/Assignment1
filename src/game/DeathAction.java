@@ -10,8 +10,9 @@ import edu.monash.fit2099.engine.weapons.WeaponItem;
 /**
  * An action executed if an actor is killed.
  * Created by:
+ * 
  * @author Adrian Kristanto
- * Modified by:
+ *         Modified by: Sacha Acland- include DeathIsTemporary interface
  *
  */
 public class DeathAction extends Action {
@@ -26,24 +27,33 @@ public class DeathAction extends Action {
      * will be dropped to the location in the game map where the target was
      *
      * @param target The actor performing the action.
-     * @param map The map the actor is on.
+     * @param map    The map the actor is on.
      * @return result of the action to be displayed on the UI
      */
     @Override
     public String execute(Actor target, GameMap map) {
         String result = "";
 
-        ActionList dropActions = new ActionList();
-        // drop all items
-        for (Item item : target.getItemInventory())
-            dropActions.add(item.getDropAction(target));
-        for (WeaponItem weapon : target.getWeaponInventory())
-            dropActions.add(weapon.getDropAction(target));
-        for (Action drop : dropActions)
-            drop.execute(target, map);
-        // remove actor
-        map.removeActor(target);
-        result += System.lineSeparator() + menuDescription(target);
+        // case for if the enemy is a skeleton
+        if (target instanceof Bones) {
+            result += new TransformationAction(new PileOfBones(target)).execute(target, map);
+        }
+
+        else {
+
+            ActionList dropActions = new ActionList();
+            // drop all items
+            for (Item item : target.getItemInventory())
+                dropActions.add(item.getDropAction(target));
+            for (WeaponItem weapon : target.getWeaponInventory())
+                dropActions.add(weapon.getDropAction(target));
+            for (Action drop : dropActions)
+                drop.execute(target, map);
+            // remove actor
+            map.removeActor(target);
+            result += System.lineSeparator() + menuDescription(target);
+
+        }
         return result;
     }
 

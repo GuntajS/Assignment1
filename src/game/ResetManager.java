@@ -6,8 +6,9 @@ import java.util.List;
 /**
  * A reset manager class that manages a list of resettables.
  * Created by:
+ * 
  * @author Adrian Kristanto
- * Modified by:
+ *         Modified by: Sacha Acland 22/4
  *
  */
 public class ResetManager {
@@ -22,9 +23,24 @@ public class ResetManager {
         this.resettables = new ArrayList<>();
     }
 
-    public void run() {}
+    /**
+     * Gets the instance of ResetManager
+     * 
+     * @return resetManager class
+     */
+    public static ResetManager getInstance() {
+        if (instance == null) {
+            instance = new ResetManager();
+        }
+        return instance;
+    }
 
-    public void registerResettable(Resettable resettable) {}
+    public void run() {
+    }
 
-    public void removeResettable(Resettable resettable) {}
+    public void registerResettable(Resettable resettable) {
+    }
+
+    public void removeResettable(Resettable resettable) {
+    }
 }

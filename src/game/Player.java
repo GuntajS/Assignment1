@@ -6,14 +6,17 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.displays.Menu;
+import edu.monash.fit2099.engine.weapons.*;
+import game.enemies.Enemy;
 
 /**
  * Class representing the Player. It implements the Resettable interface.
  * It carries around a club to attack a hostile creature in the Lands Between.
  * Created by:
+ * 
  * @author Adrian Kristanto
- * Modified by:
- * @author Guntaj Singh
+ *         Modified by:
+ *
  */
 public class Player extends Actor implements Resettable {
 
@@ -42,7 +45,30 @@ public class Player extends Actor implements Resettable {
 		return menu.showMenu(this, actions, display);
 	}
 
+	@Override
+	public ActionList allowableActions(Actor otherActor, String direction, GameMap map) {
+		// The player can be followed by enemies
+		ActionList actions = new ActionList();
+
+		// Can be followed by other enemies
+		if (otherActor instanceof Enemy) {
+			otherActor.addCapability(Status.WILL_FOLLOW);
+		}
+
+		if (otherActor.hasCapability(Status.WILL_FOLLOW)) {
+			Enemy enemy = (Enemy) otherActor;
+			enemy.addFollowBehaviour(new FollowBehaviour(this));
+		}
+		// The player can be attacked by enemies
+		if (otherActor instanceof Enemy) {
+			Weapon weapon = ((Enemy) otherActor).getWeapon();
+			actions.add(new AttackAction(this, direction, weapon));
+		}
+		return actions;
+	}
 
 	@Override
-	public void reset() {}
+	public void reset(GameMap map) {
+
+	}
 }
