@@ -9,7 +9,7 @@ public class BuyAction extends Action {
     /**
      * Current Player
      */
-    private final Player player;
+    private Player player;
 
     /**
      * Name of item to buy
