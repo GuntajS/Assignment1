@@ -29,10 +29,15 @@ public class Player extends Actor implements Resettable {
 	 * @param displayChar Character to represent the player in the UI
 	 * @param hitPoints   Player's starting number of hitpoints
 	 */
-	public Player(String name, char displayChar, int hitPoints) {
+	public Player(String name, char displayChar, int hitPoints,int weaponnumber) {
 		super(name, displayChar, hitPoints);
 		this.addCapability(Status.HOSTILE_TO_ENEMY);
-		this.addWeaponToInventory(new Club());
+		switch(weaponnumber){
+			case 1 -> this.addWeaponToInventory(new Club());
+			case 2 -> this.addWeaponToInventory(new GreatKnife());
+			case 3 -> this.addWeaponToInventory(new Uchigatana());
+		}
+
 	}
 
 	@Override

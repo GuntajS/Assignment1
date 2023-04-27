@@ -32,11 +32,13 @@ public class BuyAction extends Action {
         switch (itemName) {
             case "Uchigatana":
                 player.addWeaponToInventory(new Uchigatana());
-
+                break;
             case "Great Knife":
                 player.addWeaponToInventory(new GreatKnife());
+                break;
             case "Club":
                 player.addWeaponToInventory(new Club());
+                break;
         }
 
         return "Bought " + this.itemName + " for " + this.itemCost + " runes";

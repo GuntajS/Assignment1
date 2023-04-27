@@ -2,6 +2,7 @@ package game;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.positions.FancyGroundFactory;
@@ -64,11 +65,25 @@ public class Application {
 		}
 
 		gameMap.at(41, 20).addActor(new HeavySS());
+		System.out.println("Choose your Class:\n 1.Wretch\n 2.Bandit\n 3.Samurai\n");
+		Scanner scanner = new Scanner(System.in);
+		int classNumber = scanner.nextInt();
 
-		Player player = new Player("Tarnished", '@', 300);
+		int hitpoints = 0;
+		switch(classNumber){
+			case 1:
+				hitpoints =455;
+				break;
+			case 2:
+			case 3:
+				hitpoints = 414;
+				break;
+		}
+		Player player = new Player("Tarnished", '@', hitpoints, classNumber);
 		world.addPlayer(player, gameMap.at(40, 14));
-
 		gameMap.at(38, 10).addActor(new Trader(player));
+
+
 
 		world.run();
 	}
