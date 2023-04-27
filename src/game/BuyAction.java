@@ -9,17 +9,17 @@ public class BuyAction extends Action {
     /**
      * Current Player
      */
-    private Player player;
+    private final Player player;
 
     /**
      * Name of item to buy
      */
-    private String itemName;
+    private final String itemName;
 
     /**
      * Cost of item
      */
-    private int itemCost;
+    private final int itemCost;
 
     public BuyAction(Player player, String itemName, int itemCost) {
         this.player = player;
