@@ -28,13 +28,18 @@ public class Trader extends Actor {
 
     @Override
     public ActionList allowableActions(Actor otherActor, String direction, GameMap map) {
-//        return super.allowableActions(otherActor, direction, map);
 
         ActionList actions = new ActionList();
 
+        // Buy Actions
         actions.add(new BuyAction(player, "Uchigatana", 5000));
         actions.add(new BuyAction(player, "Great Knife", 3500));
         actions.add(new BuyAction(player, "Club", 600));
+
+        // Sell Actions
+        actions.add(new SellAction(player, "Uchigatana", 500));
+        actions.add(new SellAction(player, "Great Knife", 350));
+        actions.add(new SellAction(player, "Club", 100));
 
     return actions;
     }
