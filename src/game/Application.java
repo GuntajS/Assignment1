@@ -68,6 +68,8 @@ public class Application {
 		Player player = new Player("Tarnished", '@', 300);
 		world.addPlayer(player, gameMap.at(40, 14));
 
+		gameMap.at(38, 10).addActor(new Trader(player));
+
 		world.run();
 	}
 }

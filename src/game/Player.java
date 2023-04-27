@@ -64,6 +64,7 @@ public class Player extends Actor implements Resettable {
 			Weapon weapon = ((Enemy) otherActor).getWeapon();
 			actions.add(new AttackAction(this, direction, weapon));
 		}
+
 		return actions;
 	}
 
