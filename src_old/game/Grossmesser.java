@@ -14,7 +14,7 @@ import edu.monash.fit2099.engine.actions.*;
  * @author Sacha Acland
  *
  */
-public class Grossmesser extends WeaponItem implements MultiAttackWeapon {
+public class Grossmesser extends WeaponItem {
 
     /**
      * Constructor
@@ -30,8 +30,7 @@ public class Grossmesser extends WeaponItem implements MultiAttackWeapon {
 
     }
 
-    @Override
-    public Action getMultiAttack(Location location) {
+    public Action getSpinAttack(Location location) {
         return new MultiAttackAction(location, this);
     }
 
