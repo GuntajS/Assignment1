@@ -1,35 +1,59 @@
 package game.enemies;
 
+import java.util.List;
+
 import edu.monash.fit2099.engine.actions.Action;
 import edu.monash.fit2099.engine.actions.ActionList;
-import edu.monash.fit2099.engine.actions.DoNothingAction;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.positions.GameMap;
-import edu.monash.fit2099.engine.weapons.*;
+import edu.monash.fit2099.engine.weapons.IntrinsicWeapon;
+import edu.monash.fit2099.engine.weapons.Weapon;
+import game.ActionCompare;
 import game.AttackAction;
 import game.FollowBehaviour;
+import game.Grossmesser;
+import game.MultiAttackAction;
+import game.MultiAttackWeapon;
+import game.RandomNumberGenerator;
+import game.Scimitar;
 import game.Status;
-import game.WanderBehaviour;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
- * BEHOLD, DOG!
- *
- * Created by:
+ * Skeletal Bandit enemy
  * 
- * @author Adrian Kristanto
- *         Modified by: Sacha Acland 14/04
- *
+ * @author Sacha Acland
  */
-public class LoneWolf extends Enemy implements Dog {
-
-    public LoneWolf() {
-        super("Lone Wolf", 'h', 102);
-        this.setIntrinsicWeapon(new IntrinsicWeapon(97, "bites", 95));
+public class SkeletalBandit extends Enemy implements Bones {
+    public SkeletalBandit() {
+        super("Heavy Skeletal Swordsman", 'q', 184);
         this.addCapability(Status.HOSTILE_TO_ENEMY);
+        this.addWeaponToInventory(new Scimitar());
+        this.setIntrinsicWeapon(new IntrinsicWeapon(7, "punches", 90));
+    }
+
+    @Override
+    public Action playTurn(ActionList actions, Action lastAction, GameMap map, Display display) {
+
+        List sortedActions = actions.sorted(new ActionCompare());
+
+        Action action = (Action) sortedActions.get(0);
+        if (action.getClass() == AttackAction.class) {
+
+            //has a 50% chance of a spin attack
+            if ((RandomNumberGenerator.getRandomInt(10) > 5) && getWeapon() instanceof MultiAttackWeapon) {
+                return new MultiAttackAction(map.locationOf(this), getWeapon());
+            }
+            return action;
+        }
+
+        if (this.hasCapability(Status.WILL_FOLLOW) && behaviours.get(998).getAction(this, map) != null) {
+            return behaviours.get(998).getAction(this, map);
+
+        }
+
+        // enemy will wander around if not following
+        return behaviours.get(999).getAction(this, map);
     }
 
     /**
@@ -44,7 +68,7 @@ public class LoneWolf extends Enemy implements Dog {
     @Override
     public ActionList allowableActions(Actor otherActor, String direction, GameMap map) {
         ActionList actions = new ActionList();
-        if (otherActor.hasCapability(Status.HOSTILE_TO_ENEMY) && !(otherActor instanceof Dog)) {
+        if (otherActor.hasCapability(Status.HOSTILE_TO_ENEMY) && !(otherActor instanceof Bones)) {
 
             // Adds attacks for weapons in inventory
             for (Weapon w : otherActor.getWeaponInventory()) {

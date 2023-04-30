@@ -10,11 +10,13 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.weapons.*;
 import game.ActionCompare;
 import game.AttackAction;
-import game.Bones;
+import game.FollowBehaviour;
 import game.Grossmesser;
 import game.PileOfBones;
 import game.RandomNumberGenerator;
 import game.Status;
+import game.MultiAttackAction;
+import game.MultiAttackWeapon;
 
 /**
  * A class for the Heavy Skeletal Swordsman.
@@ -37,10 +39,9 @@ public class HeavySS extends Enemy implements Bones {
         Action action = (Action) sortedActions.get(0);
         if (action.getClass() == AttackAction.class) {
 
-            // there's got to be a better way to do this
-            if ((RandomNumberGenerator.getRandomInt(10) > 5) && getWeapon().getClass() == Grossmesser.class) {
-                Grossmesser weapon = (Grossmesser) getWeapon();
-                return weapon.getSpinAttack(map.locationOf(this));
+            // Heavy SS has a 50% chance of a spin-attack
+            if ((RandomNumberGenerator.getRandomInt(10) > 5) && getWeapon() instanceof MultiAttackWeapon) {
+                return new MultiAttackAction(map.locationOf(this), getWeapon());
             }
             return action;
         }
@@ -52,6 +53,41 @@ public class HeavySS extends Enemy implements Bones {
 
         // enemy will wander around if not following
         return behaviours.get(999).getAction(this, map);
+    }
+
+    /**
+     * Enemies can be attacked by any actor that has the HOSTILE_TO_ENEMY
+     * capability
+     *
+     * @param otherActor the Actor that might be performing attack
+     * @param direction  String representing the direction of the other Actor
+     * @param map        current GameMap
+     * @return
+     */
+    @Override
+    public ActionList allowableActions(Actor otherActor, String direction, GameMap map) {
+        ActionList actions = new ActionList();
+        if (otherActor.hasCapability(Status.HOSTILE_TO_ENEMY) && !(otherActor instanceof Bones)) {
+
+            // Adds attacks for weapons in inventory
+            for (Weapon w : otherActor.getWeaponInventory()) {
+                actions.add(new AttackAction(this, direction, w));
+            }
+            // adds intrinsic weapon attack
+            actions.add(new AttackAction(this, direction));
+        }
+
+        // Can be followed by other enemies
+        if (otherActor.getClass() != this.getClass() && otherActor instanceof Enemy) {
+            otherActor.addCapability(Status.WILL_FOLLOW);
+        }
+        // this is a janky way of doing it and I'm aware of that.
+        if (otherActor.hasCapability(Status.WILL_FOLLOW)) {
+            Enemy enemy = (Enemy) otherActor;
+            enemy.addFollowBehaviour(new FollowBehaviour(this));
+        }
+
+        return actions;
     }
 
 }

@@ -29,11 +29,15 @@ public class Player extends Actor implements Resettable {
 	 * @param displayChar Character to represent the player in the UI
 	 * @param hitPoints   Player's starting number of hitpoints
 	 */
-	public Player(String name, char displayChar, int hitPoints) {
+	public Player(String name, char displayChar, int hitPoints,int weaponnumber) {
 		super(name, displayChar, hitPoints);
 		this.addCapability(Status.HOSTILE_TO_ENEMY);
-		this.addWeaponToInventory(new Club());
-		this.addWeaponToInventory(new Scimitar());
+		switch(weaponnumber){
+			case 1 -> this.addWeaponToInventory(new Club());
+			case 2 -> this.addWeaponToInventory(new GreatKnife());
+			case 3 -> this.addWeaponToInventory(new Uchigatana());
+		}
+
 	}
 
 	@Override
@@ -41,10 +45,10 @@ public class Player extends Actor implements Resettable {
 		// Handle multi-turn Actions
 		if (lastAction.getNextAction() != null)
 			return lastAction.getNextAction();
-		for (Weapon w : this.getWeaponInventory()) {
-			if (w instanceof MultiAttackWeapon) {
-				actions.add(((MultiAttackWeapon) w).getMultiAttack(map.locationOf(this)));
-			}
+
+		// prints out how many runes the player has if they have runes
+		if (Utils.hasRunes(this) != null) {
+			System.out.println("Runes: " + Utils.hasRunes(this).getRuneNum());
 		}
 		// return/print the console menu
 		return menu.showMenu(this, actions, display);
@@ -61,8 +65,7 @@ public class Player extends Actor implements Resettable {
 		}
 
 		if (otherActor.hasCapability(Status.WILL_FOLLOW)) {
-			Enemy enemy = (Enemy) otherActor;
-			enemy.addFollowBehaviour(new FollowBehaviour(this));
+			((Enemy) otherActor).addFollowBehaviour(new FollowBehaviour(this));
 		}
 		// The player can be attacked by enemies
 		if (otherActor instanceof Enemy) {

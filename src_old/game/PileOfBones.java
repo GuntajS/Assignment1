@@ -1,35 +1,47 @@
-package game.enemies;
+package game;
 
 import edu.monash.fit2099.engine.actions.Action;
 import edu.monash.fit2099.engine.actions.ActionList;
 import edu.monash.fit2099.engine.actions.DoNothingAction;
 import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.displays.Display;
+import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
-import edu.monash.fit2099.engine.weapons.*;
-import game.AttackAction;
-import game.FollowBehaviour;
-import game.Status;
-import game.WanderBehaviour;
-
-import java.util.HashMap;
-import java.util.Map;
+import edu.monash.fit2099.engine.weapons.Weapon;
+import edu.monash.fit2099.engine.weapons.WeaponItem;
 
 /**
- * BEHOLD, DOG!
- *
- * Created by:
+ * @author Sacha Acland
  * 
- * @author Adrian Kristanto
- *         Modified by: Sacha Acland 14/04
- *
+ *         A class for a PileOfBones that can revive into something else
  */
-public class LoneWolf extends Enemy implements Dog {
+public class PileOfBones extends Actor {
 
-    public LoneWolf() {
-        super("Lone Wolf", 'h', 102);
-        this.setIntrinsicWeapon(new IntrinsicWeapon(97, "bites", 95));
-        this.addCapability(Status.HOSTILE_TO_ENEMY);
+    private int count = 0;
+    private Actor enemy;
+
+    public PileOfBones(Actor enemy) {
+        super("Pile of bones", 'X', 2);
+        this.enemy = enemy;
+
+        // transfers inventory over
+
+        for (WeaponItem w : enemy.getWeaponInventory()) {
+            this.addWeaponToInventory(w);
+        }
+        for (Item item : enemy.getItemInventory()) {
+            this.addItemToInventory(item);
+        }
+    }
+
+    @Override
+    public Action playTurn(ActionList actions, Action lastAction, GameMap map, Display display) {
+        count++;
+        Action action = new DoNothingAction();
+        if (count == 3) {
+            action = new TransformationAction(enemy);
+        }
+        return action;
     }
 
     /**
@@ -44,7 +56,7 @@ public class LoneWolf extends Enemy implements Dog {
     @Override
     public ActionList allowableActions(Actor otherActor, String direction, GameMap map) {
         ActionList actions = new ActionList();
-        if (otherActor.hasCapability(Status.HOSTILE_TO_ENEMY) && !(otherActor instanceof Dog)) {
+        if (otherActor.hasCapability(Status.HOSTILE_TO_ENEMY) && this.getClass() != otherActor.getClass()) {
 
             // Adds attacks for weapons in inventory
             for (Weapon w : otherActor.getWeaponInventory()) {
@@ -54,16 +66,7 @@ public class LoneWolf extends Enemy implements Dog {
             actions.add(new AttackAction(this, direction));
         }
 
-        // Can be followed by other enemies
-        if (otherActor.getClass() != this.getClass() && otherActor instanceof Enemy) {
-            otherActor.addCapability(Status.WILL_FOLLOW);
-        }
-        // this is a janky way of doing it and I'm aware of that.
-        if (otherActor.hasCapability(Status.WILL_FOLLOW)) {
-            Enemy enemy = (Enemy) otherActor;
-            enemy.addFollowBehaviour(new FollowBehaviour(this));
-        }
-
         return actions;
     }
+
 }

@@ -1,31 +1,42 @@
 package game.enemies;
 
-import java.util.List;
-
 import edu.monash.fit2099.engine.actions.Action;
 import edu.monash.fit2099.engine.actions.ActionList;
-import edu.monash.fit2099.engine.actors.Actor;
+import edu.monash.fit2099.engine.actions.DoNothingAction;
+import edu.monash.fit2099.engine.actors.*;
 import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.weapons.*;
 import game.ActionCompare;
 import game.AttackAction;
+import game.Behaviour;
 import game.FollowBehaviour;
-import game.MultiAttackAction;
 import game.RandomNumberGenerator;
+import game.Resettable;
 import game.Status;
 import game.WanderBehaviour;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.List;
+
 /**
- * Giant crab
+ * 
+ * Class Enemy
  * 
  * @author Sacha Acland
  */
-public class GiantCrab extends Enemy implements Seafood {
-    public GiantCrab() {
-        super("Giant Crab", 'C', 407);
-        this.setIntrinsicWeapon(new IntrinsicWeapon(208, "slams", 90));
-        this.addCapability(Status.HOSTILE_TO_ENEMY);
+public abstract class Enemy extends Actor implements Resettable {
+
+    protected Map<Integer, Behaviour> behaviours = new HashMap<>();
+    private IntrinsicWeapon intrinsicWeapon;
+    private boolean specialSkill = false;
+    protected ActorLocationsIterator actorLocations = new ActorLocationsIterator();
+
+    public Enemy(String name, char displayChar, int hp) {
+        super(name, displayChar, hp);
+        this.behaviours.put(999, new WanderBehaviour());
     }
 
     /**
@@ -40,20 +51,16 @@ public class GiantCrab extends Enemy implements Seafood {
 
         Action action = (Action) sortedActions.get(0);
         if (action.getClass() == AttackAction.class) {
-            //50% chance of a slam attack
-            if (RandomNumberGenerator.getRandomInt(10) > 5) {
-                return new MultiAttackAction(map.locationOf(this), getIntrinsicWeapon());
-            }
             return action;
         }
 
-        if (this.hasCapability(Status.WILL_FOLLOW) && behaviours.get(998).getAction(this, map) != null) {
+        if (this.hasCapability(Status.WILL_FOLLOW) && behaviours.get(998) != null) {
+            System.out.println("test");
             return behaviours.get(998).getAction(this, map);
 
         }
 
         // enemy will wander around if not following
-        System.out.println(behaviours.get(999).getAction(this, map));
         return behaviours.get(999).getAction(this, map);
     }
 
@@ -69,7 +76,7 @@ public class GiantCrab extends Enemy implements Seafood {
     @Override
     public ActionList allowableActions(Actor otherActor, String direction, GameMap map) {
         ActionList actions = new ActionList();
-        if (otherActor.hasCapability(Status.HOSTILE_TO_ENEMY) && !(otherActor instanceof Seafood)) {
+        if (otherActor.hasCapability(Status.HOSTILE_TO_ENEMY) && this.getClass() != otherActor.getClass()) {
 
             // Adds attacks for weapons in inventory
             for (Weapon w : otherActor.getWeaponInventory()) {
@@ -90,6 +97,58 @@ public class GiantCrab extends Enemy implements Seafood {
         }
 
         return actions;
+    }
+
+    /**
+     * Reset method for enemies. Sacha 13/4
+     */
+    @Override
+    public void reset(GameMap map) {
+        // TODO Auto-generated method stub
+        map.removeActor(this);
+    }
+
+    /*
+     * Weapon methods. For most cases getWeapon can be used-if an enemy only has an
+     * intrinsic weapon getWeapon will return that.
+     * If you want to override this and skip to an enemy's intrinisc weapon only
+     * IntrinsicWeapon will return that.
+     * I have not added a getWeaponItem method as I don't see it as being necessary
+     * given the structure of getWeapon.
+     * 
+     */
+
+    /**
+     * Returns the weapon of an enemy. Default weapon is the Weapon equipped,
+     * otherwise returns the intrinsic weapon
+     * 
+     * @return the weapon of the class
+     */
+    public Weapon getWeapon() {
+
+        if (!this.getWeaponInventory().isEmpty()) {
+            return this.getWeaponInventory().get(0);
+        }
+        return intrinsicWeapon;
+    }
+
+    /**
+     * Returns the IntrinsicWeapon of an enemy.
+     * 
+     * @return An IntrinsicWeaopon
+     */
+
+    @Override
+    public IntrinsicWeapon getIntrinsicWeapon() {
+        return intrinsicWeapon;
+    }
+
+    public void setIntrinsicWeapon(IntrinsicWeapon intrinsic) {
+        this.intrinsicWeapon = intrinsic;
+    }
+
+    public void addFollowBehaviour(FollowBehaviour followBehaviour) {
+        this.behaviours.put(998, followBehaviour);
     }
 
 }
