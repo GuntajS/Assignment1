@@ -26,7 +26,7 @@ import game.Status;
  */
 public class SkeletalBandit extends Enemy implements Bones {
     public SkeletalBandit() {
-        super("Heavy Skeletal Swordsman", 'q', 184);
+        super("Heavy Skeletal Swordsman", 'q', 184, 35, 892);
         this.addCapability(Status.HOSTILE_TO_ENEMY);
         this.addWeaponToInventory(new Scimitar());
         this.setIntrinsicWeapon(new IntrinsicWeapon(7, "punches", 90));
@@ -40,7 +40,7 @@ public class SkeletalBandit extends Enemy implements Bones {
         Action action = (Action) sortedActions.get(0);
         if (action.getClass() == AttackAction.class) {
 
-            //has a 50% chance of a spin attack
+            // has a 50% chance of a spin attack
             if ((RandomNumberGenerator.getRandomInt(10) > 5) && getWeapon() instanceof MultiAttackWeapon) {
                 return new MultiAttackAction(map.locationOf(this), getWeapon());
             }

@@ -7,14 +7,8 @@ import edu.monash.fit2099.engine.actors.*;
 import edu.monash.fit2099.engine.displays.Display;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.weapons.*;
-import game.ActionCompare;
-import game.AttackAction;
-import game.Behaviour;
-import game.FollowBehaviour;
-import game.RandomNumberGenerator;
-import game.Resettable;
-import game.Status;
-import game.WanderBehaviour;
+import game.*;
+import game.runes.RuneItem;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,19 +25,18 @@ public abstract class Enemy extends Actor implements Resettable {
 
     protected Map<Integer, Behaviour> behaviours = new HashMap<>();
     private IntrinsicWeapon intrinsicWeapon;
-    private boolean specialSkill = false;
     protected ActorLocationsIterator actorLocations = new ActorLocationsIterator();
 
-    public Enemy(String name, char displayChar, int hp) {
+    // requires lower bound and upper bound of runeItem
+    public Enemy(String name, char displayChar, int hp, int runeLowerBound, int runeUpperBound) {
         super(name, displayChar, hp);
         this.behaviours.put(999, new WanderBehaviour());
+        this.addItemToInventory(new RuneItem(runeLowerBound, runeUpperBound));
+
     }
 
     /**
-     * @param actions    The list of allowable actions for this actor to take
-     * @param lastAction The last action this actor took
-     * @param map        The world map
-     * @param display    The display
+     * The playTurn for an enemy- will attack first, follow second, wander third.
      */
     @Override
     public Action playTurn(ActionList actions, Action lastAction, GameMap map, Display display) {
@@ -55,12 +48,9 @@ public abstract class Enemy extends Actor implements Resettable {
         }
 
         if (this.hasCapability(Status.WILL_FOLLOW) && behaviours.get(998) != null) {
-            System.out.println("test");
             return behaviours.get(998).getAction(this, map);
 
         }
-
-        // enemy will wander around if not following
         return behaviours.get(999).getAction(this, map);
     }
 
@@ -92,8 +82,8 @@ public abstract class Enemy extends Actor implements Resettable {
         }
         // this is a janky way of doing it and I'm aware of that.
         if (otherActor.hasCapability(Status.WILL_FOLLOW)) {
-            Enemy enemy = (Enemy) otherActor;
-            enemy.addFollowBehaviour(new FollowBehaviour(this));
+
+            ((Enemy) otherActor).addFollowBehaviour(new FollowBehaviour(this));
         }
 
         return actions;
@@ -104,7 +94,6 @@ public abstract class Enemy extends Actor implements Resettable {
      */
     @Override
     public void reset(GameMap map) {
-        // TODO Auto-generated method stub
         map.removeActor(this);
     }
 

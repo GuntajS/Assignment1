@@ -11,6 +11,7 @@ import game.AttackAction;
 import game.FollowBehaviour;
 import game.Status;
 import game.WanderBehaviour;
+import game.runes.RuneItem;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,12 +23,13 @@ import java.util.Map;
  * 
  * @author Adrian Kristanto
  *         Modified by: Sacha Acland 14/04
+ *         Extends enemy
  *
  */
 public class LoneWolf extends Enemy implements Dog {
 
     public LoneWolf() {
-        super("Lone Wolf", 'h', 102);
+        super("Lone Wolf", 'h', 102, 55, 1470);
         this.setIntrinsicWeapon(new IntrinsicWeapon(97, "bites", 95));
         this.addCapability(Status.HOSTILE_TO_ENEMY);
     }

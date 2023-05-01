@@ -19,7 +19,7 @@ import game.Status;
 public class GiantCrayfish extends Enemy implements Seafood {
 
     public GiantCrayfish() {
-        super("Giant Crayfish", 'R', 4803);
+        super("Giant Crayfish", 'R', 4803, 500, 2374);
         this.setIntrinsicWeapon(new IntrinsicWeapon(527, "slams", 100));
         this.addCapability(Status.HOSTILE_TO_ENEMY);
     }
@@ -32,12 +32,12 @@ public class GiantCrayfish extends Enemy implements Seafood {
      */
     @Override
     public Action playTurn(ActionList actions, Action lastAction, GameMap map, Display display) {
-        List sortedActions = actions.sorted(new ActionCompare());
+        List<Action> sortedActions = actions.sorted(new ActionCompare());
 
-        Action action = (Action) sortedActions.get(0);
+        Action action = sortedActions.get(0);
         if (action.getClass() == AttackAction.class) {
 
-            //50% chance of a slam attack
+            // 50% chance of a slam attack
             if (RandomNumberGenerator.getRandomInt(10) > 5) {
                 return new MultiAttackAction(map.locationOf(this), getIntrinsicWeapon());
             }

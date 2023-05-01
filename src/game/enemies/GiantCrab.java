@@ -23,8 +23,8 @@ import game.WanderBehaviour;
  */
 public class GiantCrab extends Enemy implements Seafood {
     public GiantCrab() {
-        super("Giant Crab", 'C', 407);
-        this.setIntrinsicWeapon(new IntrinsicWeapon(208, "slams", 90));
+        super("Giant Crab", 'C', 407, 318, 4961);
+        this.setIntrinsicWeapon(new IntrinsicWeapon(20, "slams", 90));
         this.addCapability(Status.HOSTILE_TO_ENEMY);
     }
 
@@ -40,7 +40,7 @@ public class GiantCrab extends Enemy implements Seafood {
 
         Action action = (Action) sortedActions.get(0);
         if (action.getClass() == AttackAction.class) {
-            //50% chance of a slam attack
+            // 50% chance of a slam attack
             if (RandomNumberGenerator.getRandomInt(10) > 5) {
                 return new MultiAttackAction(map.locationOf(this), getIntrinsicWeapon());
             }
@@ -53,7 +53,6 @@ public class GiantCrab extends Enemy implements Seafood {
         }
 
         // enemy will wander around if not following
-        System.out.println(behaviours.get(999).getAction(this, map));
         return behaviours.get(999).getAction(this, map);
     }
 

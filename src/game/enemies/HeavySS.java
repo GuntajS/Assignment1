@@ -25,7 +25,7 @@ import game.MultiAttackWeapon;
  */
 public class HeavySS extends Enemy implements Bones {
     public HeavySS() {
-        super("Heavy Skeletal Swordsman", 'q', 153);
+        super("Heavy Skeletal Swordsman", 'q', 153,35,892);
         this.addCapability(Status.HOSTILE_TO_ENEMY);
         this.addWeaponToInventory(new Grossmesser());
         this.setIntrinsicWeapon(new IntrinsicWeapon(7, "punches", 90));

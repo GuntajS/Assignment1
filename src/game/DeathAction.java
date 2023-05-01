@@ -6,6 +6,8 @@ import edu.monash.fit2099.engine.actors.Actor;
 import edu.monash.fit2099.engine.items.Item;
 import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.weapons.WeaponItem;
+import game.runes.RuneItem;
+import game.runes.RuneManager;
 import game.enemies.Bones;
 
 /**
@@ -13,7 +15,7 @@ import game.enemies.Bones;
  * Created by:
  * 
  * @author Adrian Kristanto
- *         Modified by: Sacha Acland- include DeathIsTemporary interface
+ *         Modified by:
  *
  */
 public class DeathAction extends Action {
@@ -33,6 +35,21 @@ public class DeathAction extends Action {
      */
     @Override
     public String execute(Actor target, GameMap map) {
+
+        // player death case- basic version, just concerns runes
+        // if there are any runes on the map already, despawns them.
+        // not sure if this is the best way to be doing this
+        if (target instanceof Player) {
+            RuneManager.getRuneManagerInstance().despawnRunes();
+            // despawns runes that are already out there
+
+            if (RuneManager.hasRunes(target) != null && RuneManager.hasRunes(target).getRuneNum() != 0) {
+                // if the player has runes, drops them and adds them to the RuneManager
+                RuneManager.hasRunes(target).getDropAction(target).execute(target, map);
+            }
+            return "\nPlayer died";
+        }
+
         String result = "";
 
         // case for if the enemy is a skeleton
@@ -56,6 +73,7 @@ public class DeathAction extends Action {
 
         }
         return result;
+
     }
 
     @Override

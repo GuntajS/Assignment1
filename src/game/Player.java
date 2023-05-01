@@ -8,6 +8,8 @@ import edu.monash.fit2099.engine.positions.GameMap;
 import edu.monash.fit2099.engine.displays.Menu;
 import edu.monash.fit2099.engine.weapons.*;
 import game.enemies.Enemy;
+import game.runes.RuneItem;
+import game.runes.RuneManager;
 
 /**
  * Class representing the Player. It implements the Resettable interface.
@@ -29,10 +31,14 @@ public class Player extends Actor implements Resettable {
 	 * @param displayChar Character to represent the player in the UI
 	 * @param hitPoints   Player's starting number of hitpoints
 	 */
-	public Player(String name, char displayChar, int hitPoints) {
+	public Player(String name, char displayChar, int hitPoints, int weaponnumber) {
 		super(name, displayChar, hitPoints);
 		this.addCapability(Status.HOSTILE_TO_ENEMY);
-		this.addWeaponToInventory(new Club());
+		switch (weaponnumber) {
+			case 1 -> this.addWeaponToInventory(new Club());
+			case 2 -> this.addWeaponToInventory(new GreatKnife());
+			case 3 -> this.addWeaponToInventory(new Uchigatana());
+		}
 		this.addWeaponToInventory(new Scimitar());
 	}
 
@@ -45,6 +51,10 @@ public class Player extends Actor implements Resettable {
 			if (w instanceof MultiAttackWeapon) {
 				actions.add(((MultiAttackWeapon) w).getMultiAttack(map.locationOf(this)));
 			}
+		}
+		// prints out how many runes the player has if they have runes
+		if (RuneManager.hasRunes(this) != null && RuneManager.hasRunes(this).getRuneNum() != 0) {
+			System.out.println("Runes: " + RuneManager.hasRunes(this).getRuneNum());
 		}
 		// return/print the console menu
 		return menu.showMenu(this, actions, display);
@@ -61,8 +71,7 @@ public class Player extends Actor implements Resettable {
 		}
 
 		if (otherActor.hasCapability(Status.WILL_FOLLOW)) {
-			Enemy enemy = (Enemy) otherActor;
-			enemy.addFollowBehaviour(new FollowBehaviour(this));
+			((Enemy) otherActor).addFollowBehaviour(new FollowBehaviour(this));
 		}
 		// The player can be attacked by enemies
 		if (otherActor instanceof Enemy) {

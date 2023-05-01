@@ -24,7 +24,7 @@ import game.Status;
 public class GiantDog extends Enemy implements Dog {
 
     public GiantDog() {
-        super("Giant Dog", 'G', 693);
+        super("Giant Dog", 'G', 693, 313, 1808);
         this.setIntrinsicWeapon(new IntrinsicWeapon(324, "slams", 90));
         this.addCapability(Status.HOSTILE_TO_ENEMY);
     }
@@ -41,9 +41,8 @@ public class GiantDog extends Enemy implements Dog {
 
         Action action = (Action) sortedActions.get(0);
         if (action.getClass() == AttackAction.class) {
- 
-            
-            //has a 50% chance of a slam attack
+
+            // has a 50% chance of a slam attack
             if (RandomNumberGenerator.getRandomInt(10) > 5) {
                 return new MultiAttackAction(map.locationOf(this), getIntrinsicWeapon());
             }
